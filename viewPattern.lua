@@ -30,4 +30,5 @@ end
 
 if HexType=="slate" then
     local pattern=Hex.readPattern().angles
+    drawPattern(pattern)
 end

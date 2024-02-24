@@ -1,14 +1,14 @@
-Hex=peripheral.wrap("left")
-HexType=peripheral.getType("left")
-Gpu=peripheral.wrap("right")
+local hex=peripheral.wrap("left")
+local hexType=peripheral.getType("left")
+local gpu=peripheral.wrap("right")
 --reset screen
-Gpu.refreshSize()
-Gpu.fill()
-Gpu.sync()
+gpu.refreshSize()
+gpu.fill()
+gpu.sync()
 --get screen size
-ScreenX,ScreenY=Gpu.getSize()
+local screenX,screenY=gpu.getSize()
 --set scale
-GridScale=8
+local gridScale=8
 
 --direction shorthand
 --1=EAST
@@ -28,36 +28,36 @@ GridScale=8
 function drawPattern(pattern,startDir)
     local direction
     --start x1,y1 as middle of screen
-    local x1=math.floor(ScreenX/2)
-    local y1=math.floor(ScreenY/2)
+    local x1=math.floor(screenX/2)
+    local y1=math.floor(screenY/2)
     local x2=x1
     local y2=y1
     --init start direction
     if startDir=="EAST" then--EAST
         direction=1
-        x2=x1+GridScale
+        x2=x1+gridScale
     elseif startDir=="SOUTH_EAST" then--SOUTH_EAST
         direction=2
-        x2=x1+(GridScale/2)
-        y2=y1+GridScale
+        x2=x1+(gridScale/2)
+        y2=y1+gridScale
     elseif startDir=="SOUTH_WEST" then--SOUTH_WEST
         direction=3
-        x2=x1-(GridScale/2)
-        y2=y1+GridScale
+        x2=x1-(gridScale/2)
+        y2=y1+gridScale
     elseif startDir=="WEST" then--WEST
         direction=4
-        x2=x1-GridScale
+        x2=x1-gridScale
     elseif startDir=="NORTH_WEST" then--NORTH_WEST
         direction=5
-        x2=x1-(GridScale/2)
-        y2=y1-GridScale
+        x2=x1-(gridScale/2)
+        y2=y1-gridScale
     elseif startDir=="NORTH_EAST" then--NORTH_EAST
         direction=6
-        x2=x1+(GridScale/2)
-        y2=y1-GridScale
+        x2=x1+(gridScale/2)
+        y2=y1-gridScale
     end
     --draw initial line
-    Gpu.line(x1,y1,x2,y2,0xffffffff)
+    gpu.line(x1,y1,x2,y2,0xffffffff)
     for i=1,#pattern do
         local c=pattern:sub(i,i)
         print(c)
@@ -86,29 +86,29 @@ function drawPattern(pattern,startDir)
         x1=x2
         y1=y2
         if direction==1 then--EAST
-            x2=x2+GridScale
+            x2=x2+gridScale
         elseif direction==2 then--SOUTH_EAST
-            x2=x2+(GridScale/2)
-            y2=y2+GridScale
+            x2=x2+(gridScale/2)
+            y2=y2+gridScale
         elseif direction==3 then--SOUTH_WEST
-            x2=x2-(GridScale/2)
-            y2=y2+GridScale
+            x2=x2-(gridScale/2)
+            y2=y2+gridScale
         elseif direction==4 then--WEST
-            x2=x2-GridScale
+            x2=x2-gridScale
         elseif direction==5 then--NORTH_WEST
-            x2=x2-(GridScale/2)
-            y2=y2-GridScale
+            x2=x2-(gridScale/2)
+            y2=y2-gridScale
         elseif direction==6 then--NORTH_EAST
-            x2=x2+(GridScale/2)
-            y2=y2-GridScale
+            x2=x2+(gridScale/2)
+            y2=y2-gridScale
         end
         --draw line
-        Gpu.line(x1,y1,x2,y2,0xffffffff)
+        gpu.line(x1,y1,x2,y2,0xffffffff)
     end
 end
 
-if HexType=="slate" then
-    local pattern=Hex.readPattern()
+if hexType=="slate" then
+    local pattern=hex.readPattern()
     drawPattern(pattern.angles,pattern.startDir)
-    Gpu.sync()
+    gpu.sync()
 end

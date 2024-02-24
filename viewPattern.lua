@@ -25,13 +25,36 @@ GridScale=8
 --q=left
 --a=sharp-left
 
-function drawPattern(pattern)
-    local direction=1
+function drawPattern(pattern,startDir)
+    local direction
     --start x1,y1 as middle of screen
     local x1=math.floor(ScreenX/2)
     local y1=math.floor(ScreenY/2)
-    local x2=x1+GridScale
-    local y2=y1
+    local x2
+    local y2
+    if startDir=="EAST" then--EAST
+        direction=1
+        x2=x1+GridScale
+    elseif startDir=="SOUTH_EAST" then--SOUTH_EAST
+        direction=2
+        x2=x1+(GridScale/2)
+        y2=y1+GridScale
+    elseif startDir=="SOUTH_WEST" then--SOUTH_WEST
+        direction=3
+        x2=x1-(GridScale/2)
+        y2=y1+GridScale
+    elseif startDir=="WEST" then--WEST
+        direction=4
+        x2=x1-GridScale
+    elseif startDir=="NORTH_WEST" then--NORTH_WEST
+        direction=5
+        x2=x1-(GridScale/2)
+        y2=y1-GridScale
+    elseif startDir=="NORTH_EAST" then--NORTH_EAST
+        direction=6
+        x2=x1+(GridScale/2)
+        y2=y1-GridScale
+    end
     --draw initial line
     Gpu.line(x1,y1,x2,y2,0xffffffff)
     for i=1,#pattern do
@@ -84,7 +107,7 @@ function drawPattern(pattern)
 end
 
 if HexType=="slate" then
-    local pattern=Hex.readPattern().angles
-    drawPattern(pattern)
+    local pattern=Hex.readPattern()
+    drawPattern(pattern.angles,pattern.startDir)
     Gpu.sync()
 end

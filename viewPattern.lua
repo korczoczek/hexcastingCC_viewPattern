@@ -1,5 +1,5 @@
 Hex=peripheral.wrap("left")
-HexType=peripheral.wrap("left")
+HexType=peripheral.getType("left")
 Gpu=peripheral.wrap("right")
 --reset screen
 Gpu.refreshSize()

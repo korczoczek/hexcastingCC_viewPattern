@@ -32,11 +32,11 @@ function drawPattern(pattern)
     local y1=math.floor(ScreenY/2)
     local x2=x1+GridScale
     local y2=y1
+    --draw initial line
+    Gpu.line(x1,y1,x2,y2,0xffffffff)
     for i=1,#pattern do
         local c=pattern:sub(i,i)
         print(c)
-        --draw line
-        Gpu.line(x1,y1,x2,y2,0xffffffff)
         --update direction
         if c=="d" then
             direction=direction+2
@@ -78,6 +78,8 @@ function drawPattern(pattern)
             x2=x2+(GridScale/2)
             y2=y2-GridScale
         end
+        --draw line
+        Gpu.line(x1,y1,x2,y2,0xffffffff)
     end
 end
 

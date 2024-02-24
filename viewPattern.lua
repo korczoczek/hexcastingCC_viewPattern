@@ -30,8 +30,8 @@ function drawPattern(pattern,startDir)
     --start x1,y1 as middle of screen
     local x1=math.floor(ScreenX/2)
     local y1=math.floor(ScreenY/2)
-    local x2
-    local y2
+    local x2=x1
+    local y2=y1
     --init start direction
     if startDir=="EAST" then--EAST
         direction=1

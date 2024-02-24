@@ -32,6 +32,7 @@ function drawPattern(pattern,startDir)
     local y1=math.floor(ScreenY/2)
     local x2
     local y2
+    --init start direction
     if startDir=="EAST" then--EAST
         direction=1
         x2=x1+GridScale

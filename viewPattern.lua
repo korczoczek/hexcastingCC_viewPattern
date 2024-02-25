@@ -1,7 +1,7 @@
 local args={...}
-local hex=peripheral.wrap("left")
-local hexType=peripheral.getType("left")
-local gpu=peripheral.wrap("right")
+local hex=peripheral.wrap("top")
+local hexType=peripheral.getType("top")
+local gpu=peripheral.wrap("bottom")
 --reset screen
 gpu.setSize(64)
 gpu.refreshSize()
@@ -224,7 +224,7 @@ local function drawPattern(pattern,startDir)
         gpu.lineS(x1,y1,x2,y2,color)
     end
     --denote start
-    gpu.filledRectangle(startX,startY,1,1,0xffff0000)
+    gpu.filledRectangle(startX-1,startY-1,3,3,0xffff0000)
 end
 
 if hexType=="slate" then
@@ -260,8 +260,41 @@ elseif hexType=="focal_port" then
                     sleep(2)
                 end
             end
+        elseif focus=="hexcasting:vec3" then
+            local vector=hex.readIota()
+            print("Vector")
+            print(vector.x)
+            print(vector.y)
+            print(vector.z)
+            gpu.drawText(2,2,"Vector:",0x00000000)
+            gpu.drawText(2,10,string.format("%.3f", vector.x),0x00000000)
+            gpu.drawText(2,18,string.format("%.3f", vector.y),0x00000000)
+            gpu.drawText(2,26,string.format("%.3f", vector.z),0x00000000)
+            gpu.sync()
+        elseif focus=="hexcasting:double" then
+            local number=hex.readIota()
+            print("Double")
+            print(number)
+            gpu.drawText(2,2,"Double:",0x00000000)
+            gpu.drawText(2,10,number,0x00000000)
+            gpu.sync()
+        elseif focus=="hexcasting:entity" then
+            local entity=hex.readIota()
+            local entityType
+            if entity.isPlayer then
+                entityType="Player"
+            else
+                entityType="Non-Player"
+            end
+            print(entityType.." Entity:")
+            print(entity.name)
+            print(entity.uuid)
+            gpu.drawText(2,2,entityType.." Entity:",0x00000000)
+            gpu.drawText(2,10,entity.name,0x00000000)
+            gpu.drawText(2,18,entity.uuid,0x00000000)
+            gpu.sync()
         else
-            print("Focus is empty, or contains no patterns")
+            print("Focus is empty, or unknown iota")
         end
     else
         print("Focal port is empty")

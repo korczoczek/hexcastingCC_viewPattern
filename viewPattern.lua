@@ -1,15 +1,20 @@
+local args={...}
 local hex=peripheral.wrap("left")
 local hexType=peripheral.getType("left")
 local gpu=peripheral.wrap("right")
 --reset screen
+gpu.setSize(64)
 gpu.refreshSize()
 gpu.fill()
 gpu.sync()
 --get screen size
 local screenX,screenY=gpu.getSize()
 --set scale
-local gridScale=8
-
+local gridScale=tonumber(args[1])
+if not gridScale then
+    gridScale=8
+end
+print("gridScale: "..gridScale)
 --direction shorthand
 --1=EAST
 --2=SOUTH_EAST
@@ -32,6 +37,7 @@ function drawPattern(pattern,startDir)
     local y1=math.floor(screenY/2)
     local x2=x1
     local y2=y1
+    local color=0xffffffff
     --init start direction
     if startDir=="EAST" then--EAST
         direction=1
@@ -57,10 +63,10 @@ function drawPattern(pattern,startDir)
         y2=y1-gridScale
     end
     --draw initial line
-    gpu.line(x1,y1,x2,y2,0xffffffff)
+    gpu.line(x1,y1,x2,y2,color)
     for i=1,#pattern do
         local c=pattern:sub(i,i)
-        print(c)
+        --print(c)
         --update direction
         if c=="d" then
             direction=direction+2
@@ -103,12 +109,19 @@ function drawPattern(pattern,startDir)
             y2=y2-gridScale
         end
         --draw line
-        gpu.line(x1,y1,x2,y2,0xffffffff)
+        color=color-0x00080808
+        if color<0xff000000 then
+            color=0xff000000
+        end
+        gpu.line(x1,y1,x2,y2,color)
     end
 end
 
 if hexType=="slate" then
     local pattern=hex.readPattern()
+    print("startDir: "..pattern.startDir)
+    print("angles: "..pattern.angles)
     drawPattern(pattern.angles,pattern.startDir)
     gpu.sync()
 end
+print("Render Complete")

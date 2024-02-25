@@ -144,7 +144,7 @@ local function drawPattern(pattern,startDir)
     local x2,y2=x1,y1
     local startX,startY=x1,y1
     local color=0x00ffffff
-    local colorStep=math.floor(0xff/string.len(pattern))
+    local colorStep=math.floor(0xff/(string.len(pattern)+1))
     local colorDiff=(colorStep*0x10000)+(colorStep*0x100)+colorStep
     --init start direction
     if startDir=="EAST" then--EAST
@@ -247,7 +247,7 @@ elseif hexType=="focal_port" then
         elseif focus=="hexcasting:list" then
             local iota=hex.readIota()
             print("Focus - Pattern List")
-            while true do
+            while hex.hasFocus() do
                 for i=1,#iota do
                     local pattern=iota[i]
                     print("Pattern: "..i.."/"..#iota)
@@ -258,6 +258,9 @@ elseif hexType=="focal_port" then
                     gpu.drawText(2,2,i.."/"..#iota,0x00000000)
                     gpu.sync()
                     sleep(2)
+                    if not hex.hasFocus() then
+                        break
+                    end
                 end
             end
         elseif focus=="hexcasting:vec3" then

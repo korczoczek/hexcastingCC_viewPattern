@@ -10,11 +10,12 @@ gpu.fill(background)
 gpu.setFont("ascii")
 gpu.sync()
 --get screen size
-local screenX,screenY=gpu.getSize()
+local screenX,screenY,screenBlockX,screenBlockY=gpu.getSize()
 --set scale
+local blockSize=math.min(screenBlockX,screenBlockY)
 local gridScale=tonumber(args[1])
 if not gridScale then
-    gridScale=8
+    gridScale=8*blockSize
 end
 print("gridScale: "..gridScale)
 --direction shorthand
@@ -143,6 +144,8 @@ local function drawPattern(pattern,startDir)
     local x2,y2=x1,y1
     local startX,startY=x1,y1
     local color=0x00ffffff
+    local colorStep=math.floor(0xff/string.len(pattern))
+    local colorDiff=(colorStep*0x10000)+(colorStep*0x100)+colorStep
     --init start direction
     if startDir=="EAST" then--EAST
         direction=1
@@ -168,7 +171,7 @@ local function drawPattern(pattern,startDir)
         y2=y1-gridScale
     end
     --draw initial line
-    gpu.line(x1,y1,x2,y2,color)
+    gpu.lineS(x1,y1,x2,y2,color)
     for i=1,#pattern do
         local c=pattern:sub(i,i)
         --print(c)
@@ -214,11 +217,11 @@ local function drawPattern(pattern,startDir)
             y2=y2-gridScale
         end
         --draw line
-        color=color-0x00080808
+        color=color-colorDiff
         if color<0x00080808 then
             color=0x00080808
         end
-        gpu.line(x1,y1,x2,y2,color)
+        gpu.lineS(x1,y1,x2,y2,color)
     end
     --denote start
     gpu.filledRectangle(startX,startY,1,1,0xffff0000)
@@ -252,7 +255,7 @@ elseif hexType=="focal_port" then
                     print("angles: "..pattern.angles)
                     gpu.fill(background)
                     drawPattern(pattern.angles,pattern.startDir)
-                    gpu.drawText(1,1,i.."/"..#iota,0x00000000)
+                    gpu.drawText(2,2,i.."/"..#iota,0x00000000)
                     gpu.sync()
                     sleep(2)
                 end

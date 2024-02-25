@@ -5,8 +5,9 @@ local gpu=peripheral.wrap("right")
 --reset screen
 gpu.setSize(64)
 gpu.refreshSize()
-local background=0xffaaaaaa
+local background=0x00007f00
 gpu.fill(background)
+gpu.setFont("ascii")
 gpu.sync()
 --get screen size
 local screenX,screenY=gpu.getSize()
@@ -141,7 +142,7 @@ local function drawPattern(pattern,startDir)
     local x1,y1=getStart(pattern,startDir)
     local x2,y2=x1,y1
     local startX,startY=x1,y1
-    local color=0xffffffff
+    local color=0x00ffffff
     --init start direction
     if startDir=="EAST" then--EAST
         direction=1
@@ -214,8 +215,8 @@ local function drawPattern(pattern,startDir)
         end
         --draw line
         color=color-0x00080808
-        if color<0xff0f0f0f then
-            color=0xff0f0f0f
+        if color<0x00080808 then
+            color=0x00080808
         end
         gpu.line(x1,y1,x2,y2,color)
     end
@@ -251,6 +252,7 @@ elseif hexType=="focal_port" then
                     print("angles: "..pattern.angles)
                     gpu.fill(background)
                     drawPattern(pattern.angles,pattern.startDir)
+                    gpu.drawText(1,1,i.."/"..#iota,0x00000000)
                     gpu.sync()
                     sleep(2)
                 end

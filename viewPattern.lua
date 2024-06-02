@@ -3,6 +3,7 @@ local hex=peripheral.wrap("top")
 local hexType=peripheral.getType("top")
 local gpu=peripheral.wrap("bottom")
 --reset screen
+gpu.sync()
 gpu.setSize(64)
 gpu.refreshSize()
 local background=0x00007f00
@@ -124,23 +125,35 @@ local function getBounds(pattern,startDir)
     return minX,minY,maxX,maxY
 end
 
-local function getStart(pattern,startDir)
+local function getStart(pattern,startDir,startX,startY,sizeX,sizeY)
     local minX,minY,maxX,maxY=getBounds(pattern,startDir)
     --calc size
-    local sizeX=maxX-minX
-    local sizeY=maxY-minY
-    local offsetX=(screenX-sizeX)/2
-    local offsetY=(screenY-sizeY)/2
+    local patternSizeX=maxX-minX
+    local patternSizeY=maxY-minY
+    local offsetX=((sizeX-patternSizeX)/2)+(startX-1)
+    local offsetY=((sizeY-patternSizeY)/2)+(startY-1)
     return math.floor(offsetX-minX),math.floor(offsetY-minY)
 end
 
 
-local function drawPattern(pattern,startDir)
+local function drawPattern(pattern,startDir,startX,startY,sizeX,sizeY)
+    if startX==nil then
+        startX=1
+    end
+    if startY==nil then
+        startY=1
+    end
+    if sizeX==nil then
+        sizeX=screenX
+    end
+    if sizeY==nil then
+        sizeY=screenY
+    end
     local direction
     --start x1,y1 as middle of screen
     --local x1=math.floor(screenX/2)
     --local y1=math.floor(screenY/2)
-    local x1,y1=getStart(pattern,startDir)
+    local x1,y1=getStart(pattern,startDir,startX,startY,sizeX,sizeY)
     local x2,y2=x1,y1
     local startX,startY=x1,y1
     local color=0x00ffffff
@@ -227,6 +240,22 @@ local function drawPattern(pattern,startDir)
     gpu.filledRectangle(startX-1,startY-1,3,3,0xffff0000)
 end
 
+local function drawList(iota)
+    while true do
+        for i=1,#iota do
+            local pattern=iota[i]
+            print("Pattern: "..i.."/"..#iota)
+            print("startDir: "..pattern.startDir)
+            print("angles: "..pattern.angles)
+            gpu.fill(background)
+            drawPattern(pattern.angles,pattern.startDir)
+            gpu.drawText(2,2,i.."/"..#iota,0x00000000)
+            gpu.sync()
+            sleep(2)
+        end
+    end
+end
+
 if hexType=="slate" then
     local pattern=hex.readPattern()
     print("Slate")
@@ -247,22 +276,7 @@ elseif hexType=="focal_port" then
         elseif focus=="hexcasting:list" then
             local iota=hex.readIota()
             print("Focus - Pattern List")
-            while hex.hasFocus() do
-                for i=1,#iota do
-                    local pattern=iota[i]
-                    print("Pattern: "..i.."/"..#iota)
-                    print("startDir: "..pattern.startDir)
-                    print("angles: "..pattern.angles)
-                    gpu.fill(background)
-                    drawPattern(pattern.angles,pattern.startDir)
-                    gpu.drawText(2,2,i.."/"..#iota,0x00000000)
-                    gpu.sync()
-                    sleep(2)
-                    if not hex.hasFocus() then
-                        break
-                    end
-                end
-            end
+            drawList(iota)
         elseif focus=="hexcasting:vec3" then
             local vector=hex.readIota()
             print("Vector")
@@ -302,6 +316,13 @@ elseif hexType=="focal_port" then
     else
         print("Focal port is empty")
     end
+elseif hexType=="akashic_bookshelf" then
+    local pattern=hex.readShelf().patternKey
+    print("Reading Stored Iota")
+    print("startDir: "..pattern.startDir)
+    print("angles: "..pattern.angles)
+    drawPattern(pattern.angles,pattern.startDir)
+    gpu.sync()
 else
     print("Unknown peripheral")
 end

@@ -274,7 +274,7 @@ elseif hexType=="focal_port" then
         print("Focal port is empty")
     end
 elseif hexType=="akashic_bookshelf" then
-    diplayGenericIota(hex.shelfIotaType(),hex.shelfIota())
+    diplayGenericIota(hex.shelfIotaType,hex.shelfIota)
 else
     print("Unknown peripheral")
 end

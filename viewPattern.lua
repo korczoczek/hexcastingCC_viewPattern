@@ -1,12 +1,18 @@
 local args={...}
-local hex=peripheral.wrap("top")
-local hexType=peripheral.getType("top")
-local gpu=peripheral.wrap("bottom")
+---------------------------------------
+--define where the peripherals are HERE
+local hex_location="top"
+local gpu_location="bottom"
+--set background color
+local background=0x00007f00
+---------------------------------------
+local hex=peripheral.wrap(hex_location)
+local hexType=peripheral.getType(hex_location)
+local gpu=peripheral.wrap(gpu_location)
 --reset screen
 gpu.sync()
 gpu.setSize(64)
 gpu.refreshSize()
-local background=0x00007f00
 gpu.fill(background)
 gpu.setFont("ascii")
 gpu.sync()
@@ -154,9 +160,6 @@ local function drawPattern(pattern,startDir,startX,startY,sizeX,sizeY)
         sizeY=screenY
     end
     local direction=getInitialDirection(startDir)
-    --start x1,y1 as middle of screen
-    --local x1=math.floor(screenX/2)
-    --local y1=math.floor(screenY/2)
     local x1,y1=getStart(pattern,startDir,startX,startY,sizeX,sizeY)
     local x2,y2=x1,y1
     local startX,startY=x1,y1
@@ -203,6 +206,59 @@ local function drawList(iota)
     end
 end
 
+local function diplayGenericIota(iotaType,iota)
+    if iotaType=="" or iotaType==nil then
+        print("Iota is Empty")
+        return
+    elseif iotaType=="hexcasting:pattern" then
+        print("Single Pattern")
+        print("startDir: "..iota.startDir)
+        print("angles: "..iota.angles)
+        drawPattern(iota.angles,iota.startDir)
+        gpu.sync()
+        return
+    elseif iotaType=="hexcasting:list" then
+        print("Pattern List")
+        drawList(iota)
+        return
+    elseif iotaType=="hexcasting:vec3" then
+        print("Vector")
+        print(iota.x)
+        print(iota.y)
+        print(iota.z)
+        gpu.drawText(2,2,"Vector:",0x00000000)
+        gpu.drawText(2,10,string.format("%.3f", iota.x),0x00000000)
+        gpu.drawText(2,18,string.format("%.3f", iota.y),0x00000000)
+        gpu.drawText(2,26,string.format("%.3f", iota.z),0x00000000)
+        gpu.sync()
+        return
+    elseif iotaType=="hexcasting:double" then
+        print("Double")
+        print(iota)
+        gpu.drawText(2,2,"Double:",0x00000000)
+        gpu.drawText(2,10,iota,0x00000000)
+        gpu.sync()
+        return
+    elseif iotaType=="hexcasting:entity" then
+        local entityType
+        if iota.isPlayer then
+            entityType="Player"
+        else
+            entityType="Non-Player"
+        end
+        print(entityType.." Entity:")
+        print(iota.name)
+        print(iota.uuid)
+        gpu.drawText(2,2,entityType.." Entity:",0x00000000)
+        gpu.drawText(2,10,iota.name,0x00000000)
+        gpu.drawText(2,18,iota.uuid,0x00000000)
+        gpu.sync()
+        return
+    else
+        print("Unknown iota")
+    end
+end
+
 --determine storage type
 if hexType=="slate" then
     local pattern=hex.readPattern()
@@ -213,64 +269,12 @@ if hexType=="slate" then
     gpu.sync()
 elseif hexType=="focal_port" then
     if hex.hasFocus() then
-        local focus=hex.getIotaType()
-        if focus=="hexcasting:pattern" then
-            local pattern=hex.readIota()
-            print("Focus - Single Pattern")
-            print("startDir: "..pattern.startDir)
-            print("angles: "..pattern.angles)
-            drawPattern(pattern.angles,pattern.startDir)
-            gpu.sync()
-        elseif focus=="hexcasting:list" then
-            local iota=hex.readIota()
-            print("Focus - Pattern List")
-            drawList(iota)
-        elseif focus=="hexcasting:vec3" then
-            local vector=hex.readIota()
-            print("Vector")
-            print(vector.x)
-            print(vector.y)
-            print(vector.z)
-            gpu.drawText(2,2,"Vector:",0x00000000)
-            gpu.drawText(2,10,string.format("%.3f", vector.x),0x00000000)
-            gpu.drawText(2,18,string.format("%.3f", vector.y),0x00000000)
-            gpu.drawText(2,26,string.format("%.3f", vector.z),0x00000000)
-            gpu.sync()
-        elseif focus=="hexcasting:double" then
-            local number=hex.readIota()
-            print("Double")
-            print(number)
-            gpu.drawText(2,2,"Double:",0x00000000)
-            gpu.drawText(2,10,number,0x00000000)
-            gpu.sync()
-        elseif focus=="hexcasting:entity" then
-            local entity=hex.readIota()
-            local entityType
-            if entity.isPlayer then
-                entityType="Player"
-            else
-                entityType="Non-Player"
-            end
-            print(entityType.." Entity:")
-            print(entity.name)
-            print(entity.uuid)
-            gpu.drawText(2,2,entityType.." Entity:",0x00000000)
-            gpu.drawText(2,10,entity.name,0x00000000)
-            gpu.drawText(2,18,entity.uuid,0x00000000)
-            gpu.sync()
-        else
-            print("Focus is empty, or unknown iota")
-        end
+        diplayGenericIota(hex.getIotaType(),hex.readIota())
     else
         print("Focal port is empty")
     end
 elseif hexType=="akashic_bookshelf" then
-    local pattern=hex.readShelf().patternKey
-    print("Reading Stored Iota")
-    print("startDir: "..pattern.startDir)
-    print("angles: "..pattern.angles)
-    drawPattern(pattern.angles,pattern.startDir)
-    gpu.sync()
+    diplayGenericIota(hex.shelfIotaType(),hex.shelfIota())
 else
     print("Unknown peripheral")
 end

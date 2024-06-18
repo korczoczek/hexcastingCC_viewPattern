@@ -16,7 +16,7 @@ local screenX,screenY,screenBlockX,screenBlockY=gpu.getSize()
 local blockSize=math.min(screenBlockX,screenBlockY)
 local gridScale=tonumber(args[1])
 if not gridScale then
-    gridScale=8*blockSize
+    gridScale=6*blockSize
 end
 print("gridScale: "..gridScale)
 --direction shorthand
@@ -34,32 +34,71 @@ print("gridScale: "..gridScale)
 --q=left
 --a=sharp-left
 
-local function getBounds(pattern,startDir)
-    local x,y,minX,minY,maxX,maxY=0,0,0,0,0,0
-    local direction
+local function getInitialDirection(startDir)
     if startDir=="EAST" then--EAST
-        direction=1
-        x=x+gridScale
+        return 1
     elseif startDir=="SOUTH_EAST" then--SOUTH_EAST
-        direction=2
+        return 2
+    elseif startDir=="SOUTH_WEST" then--SOUTH_WEST
+        return 3
+    elseif startDir=="WEST" then--WEST
+        return 4
+    elseif startDir=="NORTH_WEST" then--NORTH_WEST
+        return 5
+    elseif startDir=="NORTH_EAST" then--NORTH_EAST
+        return 6
+    end
+end
+
+local function updateDirection(c,direction)
+    if c=="d" then
+        direction=direction+2
+    elseif c=="e" then
+        direction=direction+1
+    elseif c=="w" then
+
+    elseif c=="q" then
+        direction=direction-1
+    elseif c=="a" then
+        direction=direction-2
+    else
+        error("Program encountered unknown angle while reading pattern")
+        os.exit()
+    end
+    --check for over/underflow
+    if direction>6 then
+        direction=direction-6
+    elseif direction<1 then
+        direction=direction+6
+    end
+    return direction
+end
+
+local function getLineCoords(x,y,direction)
+    if direction==1 then--EAST
+        x=x+gridScale
+    elseif direction==2 then--SOUTH_EAST
         x=x+(gridScale/2)
         y=y+gridScale
-    elseif startDir=="SOUTH_WEST" then--SOUTH_WEST
-        direction=3
+    elseif direction==3 then--SOUTH_WEST
         x=x-(gridScale/2)
         y=y+gridScale
-    elseif startDir=="WEST" then--WEST
-        direction=4
+    elseif direction==4 then--WEST
         x=x-gridScale
-    elseif startDir=="NORTH_WEST" then--NORTH_WEST
-        direction=5
+    elseif direction==5 then--NORTH_WEST
         x=x-(gridScale/2)
         y=y-gridScale
-    elseif startDir=="NORTH_EAST" then--NORTH_EAST
-        direction=6
+    elseif direction==6 then--NORTH_EAST
         x=x+(gridScale/2)
         y=y-gridScale
     end
+    return x,y
+end
+
+local function getBounds(pattern,startDir)
+    local x,y,minX,minY,maxX,maxY=0,0,0,0,0,0
+    local direction=getInitialDirection(startDir)
+    x,y=getLineCoords(x,y,direction)
     if x>maxX then
         maxX=x
     elseif x<minX then
@@ -73,44 +112,9 @@ local function getBounds(pattern,startDir)
     for i=1,#pattern do
         local c=pattern:sub(i,i)
         --update direction
-        if c=="d" then
-            direction=direction+2
-        elseif c=="e" then
-            direction=direction+1
-        elseif c=="w" then
-
-        elseif c=="q" then
-            direction=direction-1
-        elseif c=="a" then
-            direction=direction-2
-        else
-            error("Program encountered unknown angle while reading pattern")
-            os.exit()
-        end
-        --check for over/underflow
-        if direction>6 then
-            direction=direction-6
-        elseif direction<1 then
-            direction=direction+6
-        end
+        direction=updateDirection(c,direction)
         --update line coords
-        if direction==1 then--EAST
-            x=x+gridScale
-        elseif direction==2 then--SOUTH_EAST
-            x=x+(gridScale/2)
-            y=y+gridScale
-        elseif direction==3 then--SOUTH_WEST
-            x=x-(gridScale/2)
-            y=y+gridScale
-        elseif direction==4 then--WEST
-            x=x-gridScale
-        elseif direction==5 then--NORTH_WEST
-            x=x-(gridScale/2)
-            y=y-gridScale
-        elseif direction==6 then--NORTH_EAST
-            x=x+(gridScale/2)
-            y=y-gridScale
-        end
+        x,y=getLineCoords(x,y,direction)
         if x>maxX then
             maxX=x
         elseif x<minX then
@@ -149,7 +153,7 @@ local function drawPattern(pattern,startDir,startX,startY,sizeX,sizeY)
     if sizeY==nil then
         sizeY=screenY
     end
-    local direction
+    local direction=getInitialDirection(startDir)
     --start x1,y1 as middle of screen
     --local x1=math.floor(screenX/2)
     --local y1=math.floor(screenY/2)
@@ -160,75 +164,18 @@ local function drawPattern(pattern,startDir,startX,startY,sizeX,sizeY)
     local colorStep=math.floor(0xff/(string.len(pattern)+1))
     local colorDiff=(colorStep*0x10000)+(colorStep*0x100)+colorStep
     --init start direction
-    if startDir=="EAST" then--EAST
-        direction=1
-        x2=x1+gridScale
-    elseif startDir=="SOUTH_EAST" then--SOUTH_EAST
-        direction=2
-        x2=x1+(gridScale/2)
-        y2=y1+gridScale
-    elseif startDir=="SOUTH_WEST" then--SOUTH_WEST
-        direction=3
-        x2=x1-(gridScale/2)
-        y2=y1+gridScale
-    elseif startDir=="WEST" then--WEST
-        direction=4
-        x2=x1-gridScale
-    elseif startDir=="NORTH_WEST" then--NORTH_WEST
-        direction=5
-        x2=x1-(gridScale/2)
-        y2=y1-gridScale
-    elseif startDir=="NORTH_EAST" then--NORTH_EAST
-        direction=6
-        x2=x1+(gridScale/2)
-        y2=y1-gridScale
-    end
+    x2,y2=getLineCoords(x2,y2,direction)
     --draw initial line
     gpu.lineS(x1,y1,x2,y2,color)
     for i=1,#pattern do
         local c=pattern:sub(i,i)
         --print(c)
         --update direction
-        if c=="d" then
-            direction=direction+2
-        elseif c=="e" then
-            direction=direction+1
-        elseif c=="w" then
-
-        elseif c=="q" then
-            direction=direction-1
-        elseif c=="a" then
-            direction=direction-2
-        else
-            error("Program encountered unknown angle while reading pattern")
-            os.exit()
-        end
-        --check for over/underflow
-        if direction>6 then
-            direction=direction-6
-        elseif direction<1 then
-            direction=direction+6
-        end
+        direction=updateDirection(c,direction)
         --update line coords
         x1=x2
         y1=y2
-        if direction==1 then--EAST
-            x2=x2+gridScale
-        elseif direction==2 then--SOUTH_EAST
-            x2=x2+(gridScale/2)
-            y2=y2+gridScale
-        elseif direction==3 then--SOUTH_WEST
-            x2=x2-(gridScale/2)
-            y2=y2+gridScale
-        elseif direction==4 then--WEST
-            x2=x2-gridScale
-        elseif direction==5 then--NORTH_WEST
-            x2=x2-(gridScale/2)
-            y2=y2-gridScale
-        elseif direction==6 then--NORTH_EAST
-            x2=x2+(gridScale/2)
-            y2=y2-gridScale
-        end
+        x2,y2=getLineCoords(x2,y2,direction)
         --draw line
         color=color-colorDiff
         if color<0x00080808 then
@@ -256,6 +203,7 @@ local function drawList(iota)
     end
 end
 
+--determine storage type
 if hexType=="slate" then
     local pattern=hex.readPattern()
     print("Slate")

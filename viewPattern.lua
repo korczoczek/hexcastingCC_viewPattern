@@ -40,6 +40,40 @@ print("gridScale: "..gridScale)
 --q=left
 --a=sharp-left
 
+local patternList = {
+    --Basic Patterns
+    ["qaq"] = "Mind's Reflection",
+    ["aa"] = "Compass' Purification I",
+    ["dd"] = "Compass' Purification II",
+    ["wa"] = "Alidade's Purification",
+    ["wqaawdd"] = "Archer's Distillation",
+    ["weddwaa"] = "Architect's Distillation",
+    ["weaqa"] = "Scout's Distillation",
+    ["de"] = "Reveal",
+    ["awq"] = "Stadiometer's Prfn.",
+    ["wq"] = "Pace Purification",
+    --Mathematics
+    ["waaw"] = "Additive Distillation",
+    ["wddw"] = "Subtractive Distillation",
+    ["waqaw"] = "Multiplicative Dstl.",
+    ["wdedw"] = "Division Dstl.",
+    ["wqaqw"] = "Length Purification",
+    ["wedew"] = "Power Distillation",
+    ["ewq"] = "Floor Purification",
+    ["qwe"] = "Ceiling Purification",
+    ["eqqqqq"] = "Vector Exaltation",
+    ["qeeeee"] = "Vector Disintegration",
+    ["addwaad"] = "Modulus Distillation",
+    ["qqqqqaww"] = "Axial Purification",
+    ["eqqq"] = "Entropy Reflection",
+    --Constants
+    ["aqae"] = "True Reflection",
+    ["dedq"] = "False Reflection",
+    ["d"] = "Nullary Reflection",
+    ["qqqqq"] = "Vector Reflection Zero",
+
+}
+
 local function getInitialDirection(startDir)
     if startDir=="EAST" then--EAST
         return 1
@@ -162,7 +196,7 @@ local function drawPattern(pattern,startDir,startX,startY,sizeX,sizeY)
     local direction=getInitialDirection(startDir)
     local x1,y1=getStart(pattern,startDir,startX,startY,sizeX,sizeY)
     local x2,y2=x1,y1
-    local startX,startY=x1,y1
+    startX,startY=x1,y1
     local color=0x00ffffff
     local colorStep=math.floor(0xff/(string.len(pattern)+1))
     local colorDiff=(colorStep*0x10000)+(colorStep*0x100)+colorStep
@@ -194,6 +228,10 @@ local function drawList(iota)
     while true do
         for i=1,#iota do
             local pattern=iota[i]
+            if pattern.angles==nil then
+                print("List contains non-pattern elements, quitting program")
+                return
+            end
             print("Pattern: "..i.."/"..#iota)
             print("startDir: "..pattern.startDir)
             print("angles: "..pattern.angles)
@@ -207,8 +245,12 @@ local function drawList(iota)
 end
 
 local function diplayGenericIota(iotaType,iota)
-    if iotaType=="" or iotaType==nil then
+    if iotaType=="hexcasting:null" then
         print("Iota is Empty")
+        return
+    elseif iotaType=="hexcasting:list" then
+        print("Pattern List")
+        drawList(iota)
         return
     elseif iotaType=="hexcasting:pattern" then
         print("Single Pattern")
@@ -216,10 +258,6 @@ local function diplayGenericIota(iotaType,iota)
         print("angles: "..iota.angles)
         drawPattern(iota.angles,iota.startDir)
         gpu.sync()
-        return
-    elseif iotaType=="hexcasting:list" then
-        print("Pattern List")
-        drawList(iota)
         return
     elseif iotaType=="hexcasting:vec3" then
         print("Vector")
@@ -254,8 +292,43 @@ local function diplayGenericIota(iotaType,iota)
         gpu.drawText(2,18,iota.uuid,0x00000000)
         gpu.sync()
         return
+    elseif iotaType=="moreiotas:matrix" then
+        print("moreiotas Matrix")
+        gpu.drawText(2,2,"moreiotas Matrix",0x00000000)
+        local maxLen=0
+        local str
+        for i=1,#iota.matrix do
+            str=string.format("%.3f",iota.matrix[i])
+            local strLen=string.len(str)
+            if strLen>maxLen then
+                maxLen=strLen
+            end
+        end
+        local offsetY=0
+        local index=1
+        for i=1,iota.row do
+            local offsetX=0
+            if offsetY+18<screenY then
+                for j=1,iota.col do
+                    if offsetX+(maxLen*6)<screenX then
+                        gpu.drawText(2+offsetX,10+offsetY,string.format("%.3f", iota.matrix[index]),0x00000000)
+                        print(iota.matrix[index])
+                    end
+                    offsetX=offsetX+(maxLen*6)
+                    index=index+1
+                end
+            end
+            offsetY=offsetY+8
+        end
+        gpu.sync()
+        return
     else
-        print("Unknown iota")
+        print("Unknown iota, attempting to print")
+        print(iotaType)
+        print(tostring(iota))
+        gpu.drawText(2,2,iotaType,0x00000000)
+        gpu.drawText(2,10,tostring(iota),0x00000000)
+        gpu.sync()
     end
 end
 
@@ -274,7 +347,8 @@ elseif hexType=="focal_port" then
         print("Focal port is empty")
     end
 elseif hexType=="akashic_bookshelf" then
-    diplayGenericIota(hex.shelfIotaType,hex.shelfIota)
+    local shelf=hex.readShelf()
+    diplayGenericIota(shelf.shelfIotaType,shelf.shelfIota)
 else
     print("Unknown peripheral")
 end

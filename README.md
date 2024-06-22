@@ -47,6 +47,10 @@ background - background color
 patternListLoc - location of the patternList.lua file
 ```
 
+## Known Issues
+ - when physically changing monitor size it's nessesary for the script to be run twice before the change is refreshed internally
+ - crash when the pattern to be displayed is just too damn big
+
 ## TODO
  - add missing pattern names
  - add ability to display more iota types

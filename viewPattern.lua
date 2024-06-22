@@ -5,6 +5,8 @@ local hex_location="top"
 local gpu_location="bottom"
 --set background color
 local background=0x00007f00
+--location of pattern name list
+local patternListLoc="patternList.lua"
 ---------------------------------------
 local hex=peripheral.wrap(hex_location)
 local hexType=peripheral.getType(hex_location)
@@ -25,6 +27,11 @@ if not gridScale then
     gridScale=6*blockSize
 end
 print("gridScale: "..gridScale)
+--load pattern list
+local isList=false
+if fs.exists(patternListLoc) then
+    local patternList = require(patternListLoc)
+end
 --direction shorthand
 --1=EAST
 --2=SOUTH_EAST
@@ -64,40 +71,6 @@ local function between(number,lower,upper)
     end
     return true
 end
-
-local patternList = { --WIP
-    --Basic Patterns
-    ["qaq"] = "Mind's Reflection",
-    ["aa"] = "Compass' Purification I",
-    ["dd"] = "Compass' Purification II",
-    ["wa"] = "Alidade's Purification",
-    ["wqaawdd"] = "Archer's Distillation",
-    ["weddwaa"] = "Architect's Distillation",
-    ["weaqa"] = "Scout's Distillation",
-    ["de"] = "Reveal",
-    ["awq"] = "Stadiometer's Prfn.",
-    ["wq"] = "Pace Purification",
-    --Mathematics
-    ["waaw"] = "Additive Distillation",
-    ["wddw"] = "Subtractive Distillation",
-    ["waqaw"] = "Multiplicative Dstl.",
-    ["wdedw"] = "Division Dstl.",
-    ["wqaqw"] = "Length Purification",
-    ["wedew"] = "Power Distillation",
-    ["ewq"] = "Floor Purification",
-    ["qwe"] = "Ceiling Purification",
-    ["eqqqqq"] = "Vector Exaltation",
-    ["qeeeee"] = "Vector Disintegration",
-    ["addwaad"] = "Modulus Distillation",
-    ["qqqqqaww"] = "Axial Purification",
-    ["eqqq"] = "Entropy Reflection",
-    --Constants
-    ["aqae"] = "True Reflection",
-    ["dedq"] = "False Reflection",
-    ["d"] = "Nullary Reflection",
-    ["qqqqq"] = "Vector Reflection Zero",
-
-}
 
 local function getInitialDirection(startDir)
     if startDir=="EAST" then--EAST

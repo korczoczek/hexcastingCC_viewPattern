@@ -224,6 +224,17 @@ local function drawPattern(pattern,startDir,startX,startY,sizeX,sizeY)
     gpu.filledRectangle(startX-1,startY-1,3,3,0xffff0000)
 end
 
+local function mysplit(inputstr, sep)
+    if sep == nil then
+      sep = "%s"
+    end
+    local t = {}
+    for str in string.gmatch(inputstr, "([^"..sep.."]+)") do
+      table.insert(t, str)
+    end
+    return t
+  end
+
 local function drawList(iota)
     while true do
         for i=1,#iota do
@@ -289,7 +300,11 @@ local function diplayGenericIota(iotaType,iota)
         print(iota.uuid)
         gpu.drawText(2,2,entityType.." Entity:",0x00000000)
         gpu.drawText(2,10,iota.name,0x00000000)
-        gpu.drawText(2,18,iota.uuid,0x00000000)
+        gpu.drawText(2,18,"UUID:",0x00000000)
+        local uuid=mysplit(iota.uuid,"-")
+        for i=1,#uuid do
+            gpu.drawText(2,18+(i*8),uuid[i],0x00000000) 
+        end
         gpu.sync()
         return
     elseif iotaType=="moreiotas:matrix" then

@@ -6,7 +6,7 @@ local gpu_location="bottom"
 --set background color
 local background=0x00007f00
 --location of pattern name list
-local patternListLoc="patternList.lua"
+local patternListLoc="patternList"
 ---------------------------------------
 local hex=peripheral.wrap(hex_location)
 local hexType=peripheral.getType(hex_location)
@@ -29,8 +29,13 @@ end
 print("gridScale: "..gridScale)
 --load pattern list
 local isList=false
-if fs.exists(patternListLoc) then
-    local patternList = require(patternListLoc)
+local patternList={}
+if fs.exists(patternListLoc..".lua") then
+    patternList = require(patternListLoc)
+    isList=true
+    print("Pattern name list file found, program will attempt to identify hex patterns")
+else
+    print("Pattern name list file NOT found")
 end
 --direction shorthand
 --1=EAST
@@ -177,8 +182,15 @@ local function getStart(pattern,startDir,startX,startY,sizeX,sizeY)
     return math.floor(offsetX-minX),math.floor(offsetY-minY)
 end
 
+local function getPatternName(pattern)
+    local name=patternList[pattern]
+    if name==nil then
+        name="???"
+    end
+    return name
+end
 
-local function drawPattern(pattern,startDir,startX,startY,sizeX,sizeY)
+local function drawPattern(pattern,startDir,startX,startY,sizeX,sizeY,patternName)
     if startX==nil then
         startX=1
     end
@@ -220,6 +232,9 @@ local function drawPattern(pattern,startDir,startX,startY,sizeX,sizeY)
     end
     --denote start
     gpu.filledRectangle(startX-1,startY-1,3,3,0xffff0000)
+    if patternName then
+        gpu.drawText(2,2,patternName,0x00000000)
+    end
 end
 
 local function drawList(iota)
@@ -227,6 +242,7 @@ local function drawList(iota)
     local index=1
     local t0=os.clock()
     local prevIndex=0
+    local patternName=""
     while true do
         local pattern=iota[index]
         if pattern.angles==nil then
@@ -237,9 +253,13 @@ local function drawList(iota)
             print("Pattern: "..index.."/"..#iota)
             print("startDir: "..pattern.startDir)
             print("angles: "..pattern.angles)
+            if isList then
+                patternName=getPatternName(pattern.angles)
+            end
+            print("Name: "..patternName)
         end
         gpu.fill(background)
-        drawPattern(pattern.angles,pattern.startDir)
+        drawPattern(pattern.angles,pattern.startDir,nil,nil,nil,nil,patternName)
         gpu.drawText(2,screenY-8,index.."/"..#iota,0x00000000)
         gpu.drawText(screenX-(14*6),screenY-8,"PREV      NEXT",getColor(isAuto))
         gpu.drawText(screenX-(9*6),screenY-8,"AUTO     ",getColor(not isAuto))
@@ -368,10 +388,17 @@ end
 --determine storage type
 if hexType=="slate" then
     local pattern=hex.readPattern()
+    local patternName=""
     print("Slate")
     print("startDir: "..pattern.startDir)
     print("angles: "..pattern.angles)
-    drawPattern(pattern.angles,pattern.startDir)
+    if isList then
+        patternName=getPatternName(pattern.angles)
+        print("Name: "..patternName)
+        drawPattern(pattern.angles,pattern.startDir,nil,nil,nil,nil,patternName)
+    else
+        drawPattern(pattern.angles,pattern.startDir)
+    end
     gpu.sync()
 elseif hexType=="focal_port" then
     if hex.hasFocus() then

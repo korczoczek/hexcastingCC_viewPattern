@@ -40,7 +40,32 @@ print("gridScale: "..gridScale)
 --q=left
 --a=sharp-left
 
-local patternList = {
+local function mysplit(inputstr, sep)
+    if sep == nil then
+      sep = "%s"
+    end
+    local t = {}
+    for str in string.gmatch(inputstr, "([^"..sep.."]+)") do
+      table.insert(t, str)
+    end
+    return t
+  end
+
+local function getColor(isActive)
+    if isActive then
+        return 0x00a0a0a0
+    end
+    return 0x00000000
+end
+
+local function between(number,lower,upper)
+    if number>upper or number<lower then
+        return false
+    end
+    return true
+end
+
+local patternList = { --WIP
     --Basic Patterns
     ["qaq"] = "Mind's Reflection",
     ["aa"] = "Compass' Purification I",
@@ -224,33 +249,53 @@ local function drawPattern(pattern,startDir,startX,startY,sizeX,sizeY)
     gpu.filledRectangle(startX-1,startY-1,3,3,0xffff0000)
 end
 
-local function mysplit(inputstr, sep)
-    if sep == nil then
-      sep = "%s"
-    end
-    local t = {}
-    for str in string.gmatch(inputstr, "([^"..sep.."]+)") do
-      table.insert(t, str)
-    end
-    return t
-  end
-
 local function drawList(iota)
+    local isAuto=true
+    local index=1
+    local t0=os.clock()
+    local prevIndex=0
     while true do
-        for i=1,#iota do
-            local pattern=iota[i]
-            if pattern.angles==nil then
-                print("List contains non-pattern elements, quitting program")
-                return
-            end
-            print("Pattern: "..i.."/"..#iota)
+        local pattern=iota[index]
+        if pattern.angles==nil then
+            print("List contains non-pattern elements, quitting program")
+            return
+        end
+        if prevIndex~=index then
+            print("Pattern: "..index.."/"..#iota)
             print("startDir: "..pattern.startDir)
             print("angles: "..pattern.angles)
-            gpu.fill(background)
-            drawPattern(pattern.angles,pattern.startDir)
-            gpu.drawText(2,2,i.."/"..#iota,0x00000000)
-            gpu.sync()
-            sleep(2)
+        end
+        gpu.fill(background)
+        drawPattern(pattern.angles,pattern.startDir)
+        gpu.drawText(2,screenY-8,index.."/"..#iota,0x00000000)
+        gpu.drawText(screenX-(14*6),screenY-8,"PREV      NEXT",getColor(isAuto))
+        gpu.drawText(screenX-(9*6),screenY-8,"AUTO     ",getColor(not isAuto))
+        gpu.sync()
+        prevIndex=index
+        local timer=os.startTimer(0.1)
+        local event,loc,x,y=os.pullEvent()
+        os.cancelTimer(timer)
+        if event=="tm_monitor_touch" and loc==gpu_location then
+            if between(x,screenX-(9*6),screenX-(5*6)) and between(y,screenY-24,screenY) then
+                isAuto=not isAuto
+            elseif between(x,screenX-(14*6),screenX-(10*6)) and between(y,screenY-24,screenY) then
+                if not isAuto then
+                    index=index-1
+                end
+            elseif between(x,screenX-(4*6),screenX-(0*6)) and between(y,screenY-24,screenY) then
+                if not isAuto then
+                    index=index+1
+                end
+            end
+        end
+        if isAuto and os.clock()-t0>2 then
+            index=index+1
+            t0=os.clock()
+        end
+        if index>#iota then
+            index=1
+        elseif index<1 then
+            index=#iota
         end
     end
 end

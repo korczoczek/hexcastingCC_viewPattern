@@ -1,7 +1,7 @@
 return { --WIP
     --Basic Patterns
     ["qaq"] = "Mind's Reflection",
-    ["aa"] = "Compass' Purification I",
+    ["aa"] = "Compass' Purification",
     ["dd"] = "Compass' Purification II",
     ["wa"] = "Alidade's Purification",
     ["wqaawdd"] = "Archer's Distillation",

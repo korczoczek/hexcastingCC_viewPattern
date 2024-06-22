@@ -24,6 +24,7 @@ Located inside:
 
 ## Setup
 By default the script will attempt to read from the block above and display using the GPU placed below (see picture below), to change this behaviour by editing the `hex_location` and `gpu_location` variables found in the beggining of the script.
+
 Recommended monitor size is 3x3 blocks, but the script will attempt to scale to any monitor size
 ![Screenshot of the recommended script setup, the focal port is above the computer with the GPU below and a 3x3 monitor with its bottom left corner adjacent to the GPU](/images/setup.png)
 

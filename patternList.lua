@@ -38,21 +38,6 @@ return { --WIP
     ["eawae"]="Circle's Reflection",
     ["qdwdq"]="Arc's Reflection",
     ["aaq"]="Euler's Reflection",
-    --Dimensional Iotas
-    ["wqwqwqwqwqwaeqqe"]="Spacial Reflection",
-    ["wqwqwqwqwqwaqeeq"]="Spacial Reflection II",
-    --Item Frame Patterns
-    ["wwawwqwwawwaeae"]="Decorator's Purification",
-    ["wwawwqwwawwaqdq"]="Decorator's Gambit",
-    --Status iotas
-    ["qqqqqedwd"]="Apothecary's Prfn.",
-    ["eeeeeqawa"]="Apothecary's Prfn. II",
-    ["qqqqqedwdwd"]="Pharmacist's Prfn.",
-    ["eeeeeqawawa"]="Pharmacist's Prfn. II",
-    ["eaeeeeeae"]="Entity Distillation: Status",
-    ["ewqqqqqwe"]="Zone Exltn.: Status",
-    ["qweeeeewq"]="Zone Exltn.: Not-Status",
-    ["eeeeedaqdewed"]="Cleanse Status",
     --stack manipulation
     ["a"]="Novice's Gambit",
     ["aawdd"]="Jester's Gambit",
@@ -98,10 +83,6 @@ return { --WIP
     ["qqqqqwdeddwd"]="Zone Dstl.: Living",
     ["eeeeewaqaawd"]="Zone Dstl.: Non-Living",
     ["qqqqqwded"]="Zone Dstl.: Any",
-    --Hotbar Manipulation
-    ["qwawqwa"]="Handy Reflection",
-    ["dwewdwe"]="Handy Gambit",
-    ["qwawqwadawqwa"]="Handoff",
     --List Manipulation
     ["deeed"]="Selection Distillation",
     ["qaeaqwded"]="Selection Exaltation",

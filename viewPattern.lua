@@ -328,7 +328,14 @@ local function diplayGenericIota(iotaType,iota)
         print("Single Pattern")
         print("startDir: "..iota.startDir)
         print("angles: "..iota.angles)
-        drawPattern(iota.angles,iota.startDir)
+        local patternName
+        if isList then
+            patternName=getPatternName(iota.angles)
+            print("Name: "..patternName)
+            drawPattern(iota.angles,iota.startDir,nil,nil,nil,nil,patternName)
+        else
+            drawPattern(iota.angles,iota.startDir)
+        end
         gpu.sync()
         return
     elseif iotaType=="hexcasting:vec3" then

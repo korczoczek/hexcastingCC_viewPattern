@@ -77,6 +77,10 @@ local function between(number,lower,upper)
     return true
 end
 
+local function starts_with(str, start)
+    return str:sub(1, #start) == start
+ end
+
 local function getInitialDirection(startDir)
     if startDir=="EAST" then--EAST
         return 1
@@ -185,7 +189,26 @@ end
 local function getPatternName(pattern)
     local name=patternList[pattern]
     if name==nil then
-        name="???"
+        if starts_with(pattern,"dedd") or starts_with(pattern,"aqaa") then
+            local number=0
+            for i=4,#pattern do
+                local op=pattern:sub(i,i)
+                if op=="a" then
+                    number=number*2
+                elseif op=="q" then
+                    number=number+5
+                elseif op=="w" then
+                    number=number+1
+                elseif op=="e" then
+                    number=number+10
+                elseif op=="d" then
+                    number=number/2
+                end
+            end
+            name=tostring(number)
+        else
+            name="?????"
+        end
     end
     return name
 end

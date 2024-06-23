@@ -294,6 +294,7 @@ local function drawList(iota)
         if event=="tm_monitor_touch" and loc==gpu_location then
             if between(x,screenX-(9*6),screenX-(5*6)) and between(y,screenY-24,screenY) then
                 isAuto=not isAuto
+                t0=os.clock()
             elseif between(x,screenX-(14*6),screenX-(10*6)) and between(y,screenY-24,screenY) then
                 if not isAuto then
                     index=index-1

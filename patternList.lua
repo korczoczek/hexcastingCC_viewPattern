@@ -131,5 +131,47 @@ return { --WIP
     --Meta-evaluation
     ["deaqq"]="Hermes' Gambit",
     ["dadad"]="Thoth's Gambit",
-    ["aqdee"]="Charon's Gambit"
+    ["aqdee"]="Charon's Gambit",
+    --Basic Spells
+    ["aawaawaa"]="Explosion",
+    ["ddwddwdd"]="Fireball",
+    ["awqqqwaqw"]="Impulse",
+    ["awqqqwaq"]="Blink",
+    ["adaa"]="Make Note",
+    --Block Manipulation
+    ["eeeeede"]="Place Block",
+    ["qaqqqqq"]="Break Block",
+    ["aqawqadaq"]="Create Water",
+    ["dedwedade"]="Destroy Liquid",
+    ["qqa"]="Conjure Block",
+    ["qqd"]="Conjure Light",
+    ["wqaqwawqaqw"]="Overgrow",
+    ["wqaqwd"]="Edify Sapling",
+    ["aaqawawa"]="Ignite Block",
+    ["ddedwdwd"]="Extinguish Area",
+    --Nadirs
+    ["qqqqqaqwawaw"]="White Sun's Nadir",
+    ["qqqqqawwawawd"]="Blue Sun's Nadir",
+    ["qqqqqaewawawe"]="Black Sun's Nadir",
+    ["qqqqqadwawaww"]="Red Sun's Nadir",
+    ["qqqqqadwawaw"]="Green Sun's Nadir",
+    --Crafting casting items
+    ["waqqqqq"]="Craft Cypher",
+    ["wwaqqqqqeaqeaeqqqeaeq"]="Craft Trinket",
+    ["wwaqqqqqeawqwqwqwqwqwwqqeadaeqqeqqeadaeqq"]="Craft Artifact",
+    ["qqqqqwaeaeaeaeaea"]="Recharge Item",
+    ["qdqawwaww"]="Erase Item",
+    --Sentinels
+    ["waeawae"]="Summon Sentinel",
+    ["qdwdqdw"]="Banish Sentinel",
+    ["waeawaede"]="Locate Sentinel",
+    ["waeawaedwa"]="Wayfind Sentinel",
+    --pigment
+    ["awddwqawqwawq"]="Internalize Pigment",
+    --Flight
+    ["awawaawq"]="Anchorite's Flight",
+    ["dwdwdewq"]="Wayfarer's Flight",
+    --Pehkui
+    ["aawawwawwa"]="Gulliver's Purification",
+    ["ddwdwwdwwd"]="Alter Scale"
 }

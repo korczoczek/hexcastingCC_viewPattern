@@ -298,7 +298,7 @@ local function drawList(iota)
     local patternName=""
     while true do
         local pattern=iota[index]
-        if pattern.angles==nil then
+        if pattern.angles==nil and pattern.startDir==nil then
             print("List contains non-pattern elements, quitting program")
             return
         end

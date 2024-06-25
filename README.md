@@ -33,7 +33,7 @@ Download the script file
 ```
 wget https://raw.githubusercontent.com/korczoczek/hexcastingCC_viewPattern/main/viewPattern.lua
 ```
-**(WIP)(Optional)** Download the pattern list file, which will enable the script to display names of displayed patterns
+**(WIP)(Optional)** Download the pattern list file, which will enable the script to display names of read patterns
 ```
 wget https://raw.githubusercontent.com/korczoczek/hexcastingCC_viewPattern/main/patternList.lua
 ```

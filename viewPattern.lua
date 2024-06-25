@@ -186,6 +186,31 @@ local function getStart(pattern,startDir,startX,startY,sizeX,sizeY)
     return math.floor(offsetX-minX),math.floor(offsetY-minY)
 end
 
+local function isBookkeeperGambit(pattern)
+    local first=pattern:sub(1,1)
+    if first=="w" or first=="e" or first=="a" then
+        local prev=first
+        local curr=""
+        for i=2,#pattern do
+            curr=pattern:sub(i,i)
+            if curr=="q" then
+                return false
+            elseif prev=="w" and (curr=="a" or curr=="d") then
+                return false
+            elseif prev=="a" and (curr=="w" or curr=="a") then
+                return false
+            elseif prev=="e" and curr=="d" then
+                return false
+            elseif prev=="d" and not curr=="a" then
+                return false
+            end
+            prev=curr
+        end
+        return true
+    end
+    return false
+end
+
 local function getPatternName(pattern)
     local name=patternList[pattern]
     if name==nil then
@@ -205,7 +230,12 @@ local function getPatternName(pattern)
                     number=number/2
                 end
             end
+            if starts_with(pattern,"dedd") then
+                number=0-number
+            end
             name=tostring(number)
+        elseif isBookkeeperGambit(pattern) then
+            name="Bookkeeper's Gambit"
         else
             name="?????"
         end

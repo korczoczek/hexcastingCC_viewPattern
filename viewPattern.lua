@@ -52,6 +52,20 @@ end
 --q=left
 --a=sharp-left
 
+local function equalSplit(str,len)
+    if len==nil then
+        error("No Length Provided")
+    end
+    local t={}
+    local pointerA,pointerB=1,1
+    while pointerB<=#str do
+        pointerA=pointerB
+        pointerB=pointerB+len
+        table.insert(t,str:sub(pointerA,pointerB))
+    end
+    return t
+end
+
 local function mysplit(inputstr, sep)
     if sep == nil then
       sep = "%s"
@@ -436,6 +450,17 @@ local function diplayGenericIota(iotaType,iota)
         end
         gpu.sync()
         return
+    elseif iotaType=="moreiotas:string" then
+        gpu.drawText(2,2,iotaType,0x00000000)
+        print(iotaType)
+        print(iota)
+        local table=equalSplit(iota,math.floor((screenX-2)/6))
+        for i=1,math.floor((screenY-10)/9)-1 do
+            if table[i]~=nil then
+                gpu.drawText(2,2+(i*9),table[i],0x00000000)
+            end
+        end
+        gpu.sync()
     else
         print("Unknown iota, attempting to print")
         print(iotaType)

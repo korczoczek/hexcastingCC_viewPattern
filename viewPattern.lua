@@ -136,23 +136,26 @@ local function updateDirection(c,direction)
     return direction
 end
 
-local function getLineCoords(x,y,direction)
+local function getLineCoords(x,y,direction,scale)
+    if scale==nil then
+        scale=gridScale
+    end
     if direction==1 then--EAST
-        x=x+gridScale
+        x=x+scale
     elseif direction==2 then--SOUTH_EAST
-        x=x+(gridScale/2)
-        y=y+gridScale
+        x=x+(scale/2)
+        y=y+scale
     elseif direction==3 then--SOUTH_WEST
-        x=x-(gridScale/2)
-        y=y+gridScale
+        x=x-(scale/2)
+        y=y+scale
     elseif direction==4 then--WEST
-        x=x-gridScale
+        x=x-scale
     elseif direction==5 then--NORTH_WEST
-        x=x-(gridScale/2)
-        y=y-gridScale
+        x=x-(scale/2)
+        y=y-scale
     elseif direction==6 then--NORTH_EAST
-        x=x+(gridScale/2)
-        y=y-gridScale
+        x=x+(scale/2)
+        y=y-scale
     end
     return x,y
 end
@@ -258,19 +261,8 @@ local function getPatternName(pattern)
     return name
 end
 
-local function drawPattern(pattern,startDir,startX,startY,sizeX,sizeY,patternName)
-    if startX==nil then
-        startX=1
-    end
-    if startY==nil then
-        startY=1
-    end
-    if sizeX==nil then
-        sizeX=screenX
-    end
-    if sizeY==nil then
-        sizeY=screenY
-    end
+local function drawPattern(pattern,startDir,patternName)
+    local startX,startY,sizeX,sizeY=1,1,screenX,screenY
     local direction=getInitialDirection(startDir)
     local x1,y1=getStart(pattern,startDir,startX,startY,sizeX,sizeY)
     local x2,y2=x1,y1
@@ -327,7 +319,7 @@ local function drawList(iota)
             print("Name: "..patternName)
         end
         gpu.fill(background)
-        drawPattern(pattern.angles,pattern.startDir,nil,nil,nil,nil,patternName)
+        drawPattern(pattern.angles,pattern.startDir,patternName)
         gpu.drawText(2,screenY-8,index.."/"..#iota,0x00000000)
         gpu.drawText(screenX-(14*6),screenY-8,"PREV      NEXT",getColor(isAuto))
         gpu.drawText(screenX-(9*6),screenY-8,"AUTO     ",getColor(not isAuto))
@@ -378,7 +370,7 @@ local function diplayGenericIota(iotaType,iota)
         if isList then
             patternName=getPatternName(iota.angles)
             print("Name: "..patternName)
-            drawPattern(iota.angles,iota.startDir,nil,nil,nil,nil,patternName)
+            drawPattern(iota.angles,iota.startDir,patternName)
         else
             drawPattern(iota.angles,iota.startDir)
         end
@@ -482,7 +474,7 @@ if hexType=="slate" then
     if isList then
         patternName=getPatternName(pattern.angles)
         print("Name: "..patternName)
-        drawPattern(pattern.angles,pattern.startDir,nil,nil,nil,nil,patternName)
+        drawPattern(pattern.angles,pattern.startDir,patternName)
     else
         drawPattern(pattern.angles,pattern.startDir)
     end

@@ -174,4 +174,22 @@ return { --WIP
     --Pehkui
     ["aawawwawwa"]="Gulliver's Purification",
     ["ddwdwwdwwd"]="Alter Scale"
+},
+--Great Patterns
+{
+    ["qdaqadaqwae"]="Create Lava",
+    ["qqdqqawdeeweewwweeewaqqdeewwwee"]="Greater Teleport",
+    ["waeqqqaweeweewede"]="Summon Greater Sentinel",
+    ["dqwdeeadaaeqwqeaadeqqwqeaqqeeqadd"]="Craft Phial",
+    ["dweweweweweqeeeweeqaqeqawqdeq"]="Flay Mind",
+    --Weather Manipulation
+    ["ewqdqddewawdaaw"]="Summon Lightning",
+    ["adwawawweeewwweewdd"]="Summon Rain",
+    ["weeeadqddqawqaaqeeew"]="Dispel Rain",
+    --Zeniths
+    ["aaqddadwdqeee"]="White Sun's Zenith",
+    ["ddwqdwdwddeee"]="Blue Sun's Zenith",
+    ["aaeedaaedwdqe"]="Black Sun's Zenith",
+    ["eedaaedwdqeaa"]="Red Sun's Zenith",
+    ["eeeqdwdwddeaa"]="Green Sun's Zenith"
 }

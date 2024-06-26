@@ -6,7 +6,7 @@ local gpu_location="bottom"
 --set background color
 local background=0x00007f00
 --location of pattern name list
-local patternListLoc="patternList"
+local patternListLoc="patternList.lua"
 ---------------------------------------
 local hex=peripheral.wrap(hex_location)
 local hexType=peripheral.getType(hex_location)
@@ -30,12 +30,14 @@ print("gridScale: "..gridScale)
 --load pattern list
 local isList=false
 local patternList={}
-if fs.exists(patternListLoc..".lua") then
-    patternList = require(patternListLoc)
+local greatList={}
+if fs.exists(patternListLoc) then
+    local f=assert(loadfile(patternListLoc))
+    patternList,greatList = f()
     isList=true
     print("Pattern name list file found, program will attempt to identify hex patterns")
 else
-    print("Pattern name list file NOT found")
+    print("Pattern name list file not found")
 end
 --direction shorthand
 --1=EAST
@@ -51,6 +53,12 @@ end
 --w=forward
 --q=left
 --a=sharp-left
+
+local function tableLength(T)
+    local count = 0
+    for _ in pairs(T) do count = count + 1 end
+    return count
+  end
 
 local function equalSplit(str,len)
     if len==nil then
@@ -204,6 +212,50 @@ local function getStart(pattern,startDir,startX,startY,sizeX,sizeY)
     return math.floor(offsetX-minX),math.floor(offsetY-minY)
 end
 
+local function getPointCloud(pattern)
+    local pointCloud={}
+    local direction=1
+    local x1,y1=0,0
+    table.insert(pointCloud,x1)
+    table.insert(pointCloud,y1)
+    local x2,y2=getLineCoords(x1,y1,direction,2)
+    table.insert(pointCloud,x2)
+    table.insert(pointCloud,y2)
+    for i=1,#pattern do
+        local c=pattern:sub(i,i)
+        direction=updateDirection(c,direction)
+        x1=x2
+        y1=y2
+        x2,y2=getLineCoords(x1,y1,direction,2)
+        table.insert(pointCloud,x2)
+        table.insert(pointCloud,y2)
+    end
+    return pointCloud
+end
+
+local function isPointCloudEqual(cloudA,cloudB)
+    if #cloudA%2~=0 or #cloudB%2~=0 then
+        error("One of the passed clouds has an odd number of elements")
+        os.exit()
+    end
+    if #cloudA~=#cloudB then
+        return false
+    end
+    for i=math.floor(#cloudA/2),1,-1 do
+        local j=#cloudB
+        while j>=1 and cloudA[(2*i)-1]~=cloudB[(2*j)-1] and cloudA[2*i]~=cloudB[2*j] do
+            j=j-1
+        end
+        if j==0 then
+            return false
+        end
+    end
+    --for i=1,math.floor(#cloudB/2) do
+    --    print(cloudB[(2*i)-1]..","..cloudB[2*i])
+    --end
+    return true
+end
+
 local function isBookkeeperGambit(pattern)
     local first=pattern:sub(1,1)
     if first=="w" or first=="e" or first=="a" then
@@ -230,8 +282,10 @@ local function isBookkeeperGambit(pattern)
 end
 
 local function getPatternName(pattern)
+    --check pattern list
     local name=patternList[pattern]
     if name==nil then
+        --check if number literal
         if starts_with(pattern,"dedd") or starts_with(pattern,"aqaa") then
             local number=0
             for i=4,#pattern do
@@ -256,6 +310,13 @@ local function getPatternName(pattern)
             name="Bookkeeper's Gambit"
         else
             name="?????"
+            local patternPointCloud=getPointCloud(pattern)
+            for great in pairs(greatList) do
+                local greatPointCloud=getPointCloud(great)
+                if isPointCloudEqual(greatPointCloud,patternPointCloud) then
+                    name=greatList[great]
+                end
+            end
         end
     end
     return name

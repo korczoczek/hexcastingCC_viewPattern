@@ -59,9 +59,10 @@ local function equalSplit(str,len)
     local t={}
     local pointerA,pointerB=1,1
     while pointerB<=#str do
-        pointerA=pointerB
         pointerB=pointerB+len
         table.insert(t,str:sub(pointerA,pointerB))
+        pointerB=pointerB+1
+        pointerA=pointerB
     end
     return t
 end

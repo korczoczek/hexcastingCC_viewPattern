@@ -1,5 +1,5 @@
 # hexcastingCC_viewPattern
-Script for visually displaying Hexcasting iotas in-game
+Allows for inspecting iotas stored inside focuses without having to use tools outside the game.
 
 ## Features
 
@@ -9,8 +9,9 @@ Ability to read and display iotas imbued with:
  - Vectors
  - Numbers
  - Entities
- - MoreIotas
+ - MoreIotas:
    - Matrixes
+   - Strings
 
 Located inside:
  - Slates

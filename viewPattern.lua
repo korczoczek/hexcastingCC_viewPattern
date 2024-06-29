@@ -40,12 +40,20 @@ else
     print("Pattern name list file not found")
 end
 --direction shorthand
---1=EAST
---2=SOUTH_EAST
---3=SOUTH_WEST
---4=WEST
---5=NORTH_WEST
---6=NORTH_EAST
+--0=EAST
+--1=SOUTH_EAST
+--2=SOUTH_WEST
+--3=WEST
+--4=NORTH_WEST
+--5=NORTH_EAST
+
+--angle shorthand
+--d=sharp right
+--e=right
+--w=forward
+--q=left
+--a=sharp-left
+
 local directionMap={
     ["EAST"]=0,
     ["SOUTH_EAST"]=1,
@@ -54,12 +62,6 @@ local directionMap={
     ["NORTH_WEST"]=4,
     ["NORTH_EAST"]=5
 }
---angle shorthand
---d=sharp right
---e=right
---w=forward
---q=left
---a=sharp-left
 
 local angleMap={
     ["d"]=2,
@@ -124,6 +126,9 @@ local function getInitialDirection(startDir)
 end
 
 local function updateDirection(c,direction)
+    if direction==nil then
+        error("direction is empty",2)
+    end
     if angleMap[c]==nil then
         error("Program encountered unknown angle while reading pattern")
         os.exit()
@@ -155,10 +160,10 @@ local function getLineCoords(x,y,direction,scale)
     return x,y
 end
 
-local function getBounds(pattern,startDir)
+local function getBounds(pattern,startDir,scale)
     local x,y,minX,minY,maxX,maxY=0,0,0,0,0,0
     local direction=getInitialDirection(startDir)
-    x,y=getLineCoords(x,y,direction)
+    x,y=getLineCoords(x,y,direction,scale)
     if x>maxX then
         maxX=x
     elseif x<minX then
@@ -174,7 +179,7 @@ local function getBounds(pattern,startDir)
         --update direction
         direction=updateDirection(c,direction)
         --update line coords
-        x,y=getLineCoords(x,y,direction)
+        x,y=getLineCoords(x,y,direction,scale)
         if x>maxX then
             maxX=x
         elseif x<minX then
@@ -189,8 +194,8 @@ local function getBounds(pattern,startDir)
     return minX,minY,maxX,maxY
 end
 
-local function getStart(pattern,startDir,startX,startY,sizeX,sizeY)
-    local minX,minY,maxX,maxY=getBounds(pattern,startDir)
+local function getStart(pattern,startDir,startX,startY,sizeX,sizeY,scale)
+    local minX,minY,maxX,maxY=getBounds(pattern,startDir,scale)
     --calc size
     local patternSizeX=maxX-minX
     local patternSizeY=maxY-minY
@@ -199,13 +204,13 @@ local function getStart(pattern,startDir,startX,startY,sizeX,sizeY)
     return math.floor(offsetX-minX),math.floor(offsetY-minY)
 end
 
-local function getPointCloud(pattern)
+local function getPointCloud(startDir,pattern,scale)
     local pointCloud={}
-    local direction=1
-    local x1,y1=0,0
+    local direction=getInitialDirection(startDir)
+    local x1,y1=getStart(pattern,startDir,0,0,0,0,scale)
     table.insert(pointCloud,x1)
     table.insert(pointCloud,y1)
-    local x2,y2=getLineCoords(x1,y1,direction,2)
+    local x2,y2=getLineCoords(x1,y1,direction,scale)
     table.insert(pointCloud,x2)
     table.insert(pointCloud,y2)
     for i=1,#pattern do
@@ -213,27 +218,33 @@ local function getPointCloud(pattern)
         direction=updateDirection(c,direction)
         x1=x2
         y1=y2
-        x2,y2=getLineCoords(x1,y1,direction,2)
+        x2,y2=getLineCoords(x1,y1,direction,scale)
         table.insert(pointCloud,x2)
         table.insert(pointCloud,y2)
     end
     return pointCloud
 end
 
-local function isPointCloudEqual(cloudA,cloudB)
+local function isPointCloudEqual(cloudA,cloudB,verb)
     if #cloudA%2~=0 or #cloudB%2~=0 then
-        error("One of the passed clouds has an odd number of elements")
+        error("One of the passed clouds has an odd number of elements",2)
         os.exit()
     end
     if #cloudA~=#cloudB then
+        if verb then
+            print("Number of elements does not match")
+            print("A="..#cloudA)
+            print("B="..#cloudB)
+        end
         return false
     end
     for i=math.floor(#cloudA/2),1,-1 do
         local j=math.floor(#cloudB/2)
-        while j>=1 and cloudA[(2*i)-1]~=cloudB[(2*j)-1] and cloudA[2*i]~=cloudB[2*j] do
+        while j>=1 and (cloudA[(2*i)-1]~=cloudB[(2*j)-1] or cloudA[2*i]~=cloudB[2*j]) do
             j=j-1
         end
-        if j==0 then
+        if j>0 then
+            --print(i..","..j)
             table.remove(cloudB,(2*j))
             table.remove(cloudB,(2*j)-1)
         end
@@ -241,9 +252,6 @@ local function isPointCloudEqual(cloudA,cloudB)
     if #cloudB==0 then
         return true
     end
-    --for i=1,math.floor(#cloudB/2) do
-    --    print(cloudB[(2*i)-1]..","..cloudB[2*i])
-    --end
     return false
 end
 
@@ -272,16 +280,19 @@ local function isBookkeeperGambit(pattern)
     return false
 end
 
-local function getGreatSpellName(pattern)--generate a point cloud for every rotation in every start position and compare to great spell point cloud
-    local name="?????"
-            local patternPointCloud=getPointCloud(pattern)
-            for great in pairs(greatList) do
-                local greatPointCloud=getPointCloud(great)
-                if isPointCloudEqual(greatPointCloud,patternPointCloud) then
-                    name=greatList[great]
+local function getGreatSpellName(pattern)
+        for great,greatName in pairs(greatList) do
+            for directionGreat in pairs(directionMap) do
+                local greatPointCloud=getPointCloud(directionGreat,great,2)
+                for direction in pairs(directionMap) do
+                    local patternPointCloud=getPointCloud(direction,pattern,2)
+                    if isPointCloudEqual(patternPointCloud,greatPointCloud) then
+                        return greatName
+                    end
                 end
             end
-    return name
+        end
+    return "?????"
 end
 
 local function getPatternName(pattern)
@@ -315,7 +326,7 @@ local function getPatternName(pattern)
             return getGreatSpellName(pattern)
         end
     end
-    return name
+    return assert(name)
 end
 
 local function drawPattern(pattern,startDir,patternName)

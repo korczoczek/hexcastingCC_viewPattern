@@ -46,13 +46,28 @@ end
 --4=WEST
 --5=NORTH_WEST
 --6=NORTH_EAST
-
+local directionMap={
+    ["EAST"]=0,
+    ["SOUTH_EAST"]=1,
+    ["SOUTH_WEST"]=2,
+    ["WEST"]=3,
+    ["NORTH_WEST"]=4,
+    ["NORTH_EAST"]=5
+}
 --angle shorthand
 --d=sharp right
 --e=right
 --w=forward
 --q=left
 --a=sharp-left
+
+local angleMap={
+    ["d"]=2,
+    ["e"]=1,
+    ["w"]=0,
+    ["q"]=-1,
+    ["a"]=-2
+}
 
 local function tableLength(T)
     local count = 0
@@ -105,63 +120,35 @@ local function starts_with(str, start)
  end
 
 local function getInitialDirection(startDir)
-    if startDir=="EAST" then--EAST
-        return 1
-    elseif startDir=="SOUTH_EAST" then--SOUTH_EAST
-        return 2
-    elseif startDir=="SOUTH_WEST" then--SOUTH_WEST
-        return 3
-    elseif startDir=="WEST" then--WEST
-        return 4
-    elseif startDir=="NORTH_WEST" then--NORTH_WEST
-        return 5
-    elseif startDir=="NORTH_EAST" then--NORTH_EAST
-        return 6
-    end
+    return directionMap[startDir]
 end
 
 local function updateDirection(c,direction)
-    if c=="d" then
-        direction=direction+2
-    elseif c=="e" then
-        direction=direction+1
-    elseif c=="w" then
-
-    elseif c=="q" then
-        direction=direction-1
-    elseif c=="a" then
-        direction=direction-2
-    else
+    if angleMap[c]==nil then
         error("Program encountered unknown angle while reading pattern")
         os.exit()
     end
-    --check for over/underflow
-    if direction>6 then
-        direction=direction-6
-    elseif direction<1 then
-        direction=direction+6
-    end
-    return direction
+    return (direction+angleMap[c])%6
 end
 
 local function getLineCoords(x,y,direction,scale)
     if scale==nil then
         scale=gridScale
     end
-    if direction==1 then--EAST
+    if direction==0 then--EAST
         x=x+scale
-    elseif direction==2 then--SOUTH_EAST
+    elseif direction==1 then--SOUTH_EAST
         x=x+(scale/2)
         y=y+scale
-    elseif direction==3 then--SOUTH_WEST
+    elseif direction==2 then--SOUTH_WEST
         x=x-(scale/2)
         y=y+scale
-    elseif direction==4 then--WEST
+    elseif direction==3 then--WEST
         x=x-scale
-    elseif direction==5 then--NORTH_WEST
+    elseif direction==4 then--NORTH_WEST
         x=x-(scale/2)
         y=y-scale
-    elseif direction==6 then--NORTH_EAST
+    elseif direction==5 then--NORTH_EAST
         x=x+(scale/2)
         y=y-scale
     end
@@ -242,18 +229,22 @@ local function isPointCloudEqual(cloudA,cloudB)
         return false
     end
     for i=math.floor(#cloudA/2),1,-1 do
-        local j=#cloudB
+        local j=math.floor(#cloudB/2)
         while j>=1 and cloudA[(2*i)-1]~=cloudB[(2*j)-1] and cloudA[2*i]~=cloudB[2*j] do
             j=j-1
         end
         if j==0 then
-            return false
+            table.remove(cloudB,(2*j))
+            table.remove(cloudB,(2*j)-1)
         end
+    end
+    if #cloudB==0 then
+        return true
     end
     --for i=1,math.floor(#cloudB/2) do
     --    print(cloudB[(2*i)-1]..","..cloudB[2*i])
     --end
-    return true
+    return false
 end
 
 local function isBookkeeperGambit(pattern)
@@ -281,6 +272,18 @@ local function isBookkeeperGambit(pattern)
     return false
 end
 
+local function getGreatSpellName(pattern)--generate a point cloud for every rotation in every start position and compare to great spell point cloud
+    local name="?????"
+            local patternPointCloud=getPointCloud(pattern)
+            for great in pairs(greatList) do
+                local greatPointCloud=getPointCloud(great)
+                if isPointCloudEqual(greatPointCloud,patternPointCloud) then
+                    name=greatList[great]
+                end
+            end
+    return name
+end
+
 local function getPatternName(pattern)
     --check pattern list
     local name=patternList[pattern]
@@ -305,18 +308,11 @@ local function getPatternName(pattern)
             if starts_with(pattern,"dedd") then
                 number=0-number
             end
-            name=tostring(number)
+            return tostring(number)
         elseif isBookkeeperGambit(pattern) then
-            name="Bookkeeper's Gambit"
+            return "Bookkeeper's Gambit"
         else
-            name="?????"
-            local patternPointCloud=getPointCloud(pattern)
-            for great in pairs(greatList) do
-                local greatPointCloud=getPointCloud(great)
-                if isPointCloudEqual(greatPointCloud,patternPointCloud) then
-                    name=greatList[great]
-                end
-            end
+            return getGreatSpellName(pattern)
         end
     end
     return name

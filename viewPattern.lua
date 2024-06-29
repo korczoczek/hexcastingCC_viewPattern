@@ -238,6 +238,10 @@ local function isPointCloudEqual(cloudA,cloudB,verb)
         end
         return false
     end
+    if cloudB[1]==cloudB[#cloudB-1] and cloudB[2]==cloudB[#cloudB] then
+        table.remove(cloudB)
+        table.remove(cloudB)
+    end
     for i=math.floor(#cloudA/2),1,-1 do
         local j=math.floor(#cloudB/2)
         while j>=1 and (cloudA[(2*i)-1]~=cloudB[(2*j)-1] or cloudA[2*i]~=cloudB[2*j]) do

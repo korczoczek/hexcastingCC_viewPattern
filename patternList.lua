@@ -171,9 +171,33 @@ return { --WIP
     --Flight
     ["awawaawq"]="Anchorite's Flight",
     ["dwdwdewq"]="Wayfarer's Flight",
+    --Spell circle patterns
+    ["eaqwqae"]="Waystone Reflection",
+    ["eaqwqaewede"]="Lodestone Reflection",
+    ["eaqwqaewdd"]="Lesser Fold Reflection",
+    ["aqwqawaaqa"]="Greater Fold Reflection",
+    --Akashic Patterns
+    ["qqqwqqqqqaq"]="Akasha's Distillation",
+    ["eeeweeeeede"]="Akasha's Gambit",
+    --everbook
+    ["eweeewedqdeddw"]="Mnemosyne's Gambit",
+    ["qwqqqwqaeaqaaw"]="Elysium's Gambit",
+    ["qwqqqwqaww"]="Lethe's Gambit",
+    ["eweeewedww"]="Bright's Gambit",
     --Pehkui
     ["aawawwawwa"]="Gulliver's Purification",
-    ["ddwdwwdwwd"]="Alter Scale"
+    ["ddwdwwdwwd"]="Alter Scale",
+    --types
+    ["awd"]="Classifier's Purification",
+    ["qawde"]="Physician's Purification",
+    ["qaqqaea"]="Sorter's Purification",
+    ["edeedqd"]="Sorter's Reflection",
+    ["dadqqqqqdad"]="Entity Distillation: Type",
+    ["waweeeeewaw"]="Zone Exaltation: Type",
+    ["wdwqqqqqwdw"]="Zone Exaltation: Not-Type",
+    --ducky perifs
+    ["aqadweeeede"]="Conjure Ducky"
+    
 },
 --Great Patterns
 {

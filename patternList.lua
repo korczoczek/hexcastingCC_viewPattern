@@ -1,4 +1,4 @@
-return { --WIP
+return {
     --Basic Patterns
     ["qaq"] = "Mind's Reflection",
     ["aa"] = "Compass' Purification",

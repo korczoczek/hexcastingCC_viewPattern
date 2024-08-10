@@ -35,9 +35,9 @@ if fs.exists(patternListLoc) then
     local f=assert(loadfile(patternListLoc))
     patternList,greatList = f()
     isList=true
-    print("Pattern name list file found, program will attempt to identify hex patterns")
+    print("Pattern name list found, program will attempt to identify hex patterns")
 else
-    print("Pattern name list file not found")
+    print("Pattern name list not found")
 end
 --direction shorthand
 --0=EAST

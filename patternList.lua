@@ -47,7 +47,7 @@ return {
     ["aaedd"]="Prospector's Gambit",
     ["ddqaa"]="Undertaker's Gambit",
     ["aadaadaa"]="Gemini Gambit",
-    ["addadaaw"]="Dioscuri Gambit",
+    ["aadadaaw"]="Dioscuri Gambit",
     ["qwaeawqaeaqa"]="Flock's Reflection",
     ["ddad"]="Fisherman's Gambit",
     ["aada"]="Fisherman's Gambit II",

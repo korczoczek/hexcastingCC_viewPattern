@@ -19,7 +19,7 @@ Located inside:
  - Akashic Bookshelves
 
 ## Requirements
- - [Computercraft](https://modrinth.com/mod/cc-tweaked)
+ - [CC:Tweaked](https://modrinth.com/mod/cc-tweaked)
  - [Tom's Peripherals](https://modrinth.com/mod/toms-peripherals) (GPU, Monitor)
  - [Ducky Peripherals](https://modrinth.com/mod/ducky-periphs) (Focal Port, various hexcasting APIs)
 
